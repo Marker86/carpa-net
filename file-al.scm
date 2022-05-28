@@ -53,6 +53,19 @@
           (the-funny (positive? (bit-extract integer 0 1)) exec))) ; Execute bit.
   (rwx integer read write exec))
 
+;; Check if atom is inside a list.
+(define (in-list? atom the-list)
+  (let walk-through ((current-element (car the-list))
+                     (rest-list (cdr the-list)))
+    (cond
+     ((equal? atom current-element) #t)
+     ((null? current-element) #f)
+     (else (walk-through (car rest-list) (cdr rest-list))))))
+
+;; Query to see user complementary groups names.
+(define (complement-user user)
+  #f)
+
 ;; Check if a file is accessible to the user with the given access bits.
 (define (check-file file user read write exec)
   (define (equally-true listium)
