@@ -60,8 +60,9 @@
 
   (let ((file-stat (stat file))
         (user-entry (getpwnam user)))
-    (or (equally-true (check:rwx (bit-extract (stat:perms file-stat) 6 9) read write exec))
-                                        ; Owner permissions.
-        (equally-true (check:rwx (bit-extract (stat:perms file-stat) 3 6) read write exec)
-                                        ; Group permissions.
-                      ))))
+    (or (and ; Owner permissions.
+         (equal? (passwd:uid user-entry) (stat:uid file-stat))
+         (equally-true (check:rwx (bit-extract (stat:perms file-stat) 6 9) read write exec)))
+        (and ; Group permissions.
+         (equal? (passwd:gid user-entry) (stat:gid file-stat))
+         (equally-true (check:rwx (bit-extract (stat:perms file-stat) 3 6) read write exec))))))
