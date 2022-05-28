@@ -59,7 +59,7 @@
                      (rest-list (cdr the-list)))
     (cond
      ((equal? atom current-element) #t)
-     ((null? current-element) #f)
+     ((null? rest-list) #f)
      (else (walk-through (car rest-list) (cdr rest-list))))))
 
 ;; Query to see user complementary groups names.
