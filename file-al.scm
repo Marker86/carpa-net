@@ -52,3 +52,16 @@
           (the-funny (positive? (bit-extract integer 1 2)) write) ; Write bit.
           (the-funny (positive? (bit-extract integer 0 1)) exec))) ; Execute bit.
   (rwx integer read write exec))
+
+;; Check if a file is accessible to the user with the given access bits.
+(define (check-file file user read write exec)
+  (define (equally-true listium)
+    (equal? listium (list #t #t #t)))
+
+  (let ((file-stat (stat file))
+        (user-entry (getpwnam user)))
+    (or (equally-true (check:rwx (bit-extract (stat:perms file-stat) 6 9) read write exec))
+                                        ; Owner permissions.
+        (equally-true (check:rwx (bit-extract (stat:perms file-stat) 3 6) read write exec)
+                                        ; Group permissions.
+                      ))))
