@@ -1,0 +1,9 @@
+* CARPA
+Simple web server intended to run in my slow hardware while also
+being reasonable to modify & use for me.
+
+** Usage
+GNU Guile 2.05 or upper, in an UNIX-like system.
+
+** Notes
+Not finished.
