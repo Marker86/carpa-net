@@ -55,16 +55,25 @@
 
 ;; Check if atom is inside a list.
 (define (in-list? atom the-list)
-  (let walk-through ((current-element (car the-list))
-                     (rest-list (cdr the-list)))
-    (cond
-     ((equal? atom current-element) #t)
-     ((null? rest-list) #f)
-     (else (walk-through (car rest-list) (cdr rest-list))))))
+  (if (null? the-list)
+      #f
+      (let walk-through ((current-element (car the-list))
+                         (rest-list (cdr the-list)))
+        (cond
+         ((equal? atom current-element) #t)
+         ((null? rest-list) #f)
+         (else (walk-through (car rest-list) (cdr rest-list)))))))
 
 ;; Query to see user complementary groups names.
 (define (complement-user user)
-  #f)
+  (let ((output-list '()))
+    (let walk-through ((current-element (car group-cache))
+                       (rest-list (cdr group-cache)))
+      (when (in-list? user (group:mem (current-element)))
+        (set! output-list (append! output-list
+                                   (list (group:name (current-element))))))
+      (when (pair? rest-list)
+        (walk-through (car rest-list) (cdr rest-list))))))
 
 ;; Check if a file is accessible to the user with the given access bits.
 (define (check-file file user read write exec)
@@ -77,5 +86,8 @@
          (equal? (passwd:uid user-entry) (stat:uid file-stat))
          (equally-true (check:rwx (bit-extract (stat:perms file-stat) 6 9) read write exec)))
         (and ; Group permissions.
-         (equal? (passwd:gid user-entry) (stat:gid file-stat))
+         (or
+          (equal? (passwd:gid user-entry) (stat:gid file-stat))
+          (in-list? (passwd:name user-entry)
+                    (complement-user (passwd:name user-entry))))
          (equally-true (check:rwx (bit-extract (stat:perms file-stat) 3 6) read write exec))))))
