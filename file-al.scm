@@ -87,7 +87,7 @@
          (equally-true (check:rwx (bit-extract (stat:perms file-stat) 6 9) read write exec)))
         (and ; Group permissions.
          (or
-          (equal? (passwd:gid user-entry) (stat:gid file-stat))
+          (equal? (passwd:gid user-entry) (stat:gid file-stat)) ; Same group as user.
           (in-list? (passwd:name user-entry)
-                    (complement-user (passwd:name user-entry))))
+                    (complement-user (passwd:name user-entry)))) ; User in group.
          (equally-true (check:rwx (bit-extract (stat:perms file-stat) 3 6) read write exec))))))
