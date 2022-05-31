@@ -69,11 +69,12 @@
   (let ((output-list '()))
     (let walk-through ((current-element (car group-cache))
                        (rest-list (cdr group-cache)))
-      (when (in-list? user (group:mem (current-element)))
+      (when (in-list? user (group:mem current-element))
         (set! output-list (append! output-list
-                                   (list (group:name (current-element))))))
-      (when (pair? rest-list)
-        (walk-through (car rest-list) (cdr rest-list))))))
+                                   (list (group:name current-element)))))
+      (if (null? rest-list)
+          output-list
+          (walk-through (car rest-list) (cdr rest-list))))))
 
 ;; Check if a file is accessible to the user with the given access bits.
 (define (check-file file user read write exec)
