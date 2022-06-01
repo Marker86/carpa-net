@@ -89,6 +89,6 @@
         (and ; Group permissions.
          (or
           (equal? (passwd:gid user-entry) (stat:gid file-stat)) ; Same group as user.
-          (in-list? (group:name (getgrgid (stat:gid)))
+          (in-list? (group:name (getgrgid (stat:gid file-stat)))
                     (complement-user (passwd:name user-entry)))) ; User in group.
          (equally-true (check:rwx (bit-extract (stat:perms file-stat) 3 6) read write exec))))))
