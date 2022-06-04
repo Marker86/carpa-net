@@ -1,8 +1,7 @@
 ;;; Define the silly file access control functions we will use later.
 
 ;; Use goated module.
-(use-modules (ice-9 rdelim)
-	     (ice-9 streams))
+(use-modules (ice-9 rdelim))
 
 ;; Read file into a string, then return it, returns #f if EOF.
 (define (read-file port)
