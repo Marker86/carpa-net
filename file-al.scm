@@ -12,17 +12,20 @@
 	  ((eof-object? current-line) (get-output-string output))
 	(display current-line output))))
 
+;; Add element to the end of list, abstraction intended to be used in read-directory.
+(define (list-add! l1 element)
+  (append! l1 (list element)))
+
 ;; Read directory into a list, then return it, returns #f if EOF.
 (define (read-directory dir-stream)
-  (let ((output-list '())
+  (let ((output-list (cons '() '())) ; A little hack, gonna need to find a way to make it work
+                                     ; without it shitting itself, maybe an if form for list-add!.
 	(check-eof (readdir dir-stream)))
     (if (eof-object? check-eof) ; So i can check for EOF & return #f if it's true.
 	#f
 	(begin
-	  (set! output-list
-		(append! output-list (list check-eof)))
+          (list-add! output-list check-eof)
 	  (do ((current-element (readdir dir-stream)
 				(readdir dir-stream)))
-	      ((eof-object? current-element) output-list)
-	    (set! output-list
-		  (append! output-list (list current-element))))))))
+	      ((eof-object? current-element) (cdr output-list))
+            (list-add! output-list current-element))))))
