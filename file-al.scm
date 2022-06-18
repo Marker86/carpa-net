@@ -29,3 +29,23 @@
 				(readdir dir-stream)))
 	      ((eof-object? current-element) (cdr output-list))
             (list-add! output-list current-element))))))
+
+;; Open & read file, then close it.
+(define (get-file name)
+  (let ((the-port (open-file name "r")))
+    (call-with-values
+        (λ ()
+          (read-file the-port))
+      (λ vals
+        (close-port the-port)
+        (apply values vals)))))
+
+;; Open & read directory, then close it.
+(define (get-directory name)
+  (let ((the-directory (opendir name)))
+    (call-with-values
+        (λ ()
+          (read-directory the-directory))
+      (λ vals
+        (closedir the-directory)
+        (apply values vals)))))
