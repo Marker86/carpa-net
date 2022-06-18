@@ -1,4 +1,3 @@
-
 ;;; Define the silly file access control functions we will use later.
 
 ;; Use goated module.
