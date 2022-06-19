@@ -49,3 +49,13 @@
       (λ vals
         (closedir the-directory)
         (apply values vals)))))
+
+;; Open path & return 2 values, one being the data itself & the second being the file type symbol.
+(define (get-path-file path)
+  (let ((file-type (stat:type (stat path))))
+    (values
+     (case file-type
+       ((regular) (get-file path))
+       ((directory) (get-directory path))
+       (else #f))
+     file-type)))
