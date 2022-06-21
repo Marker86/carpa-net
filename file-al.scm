@@ -30,12 +30,27 @@
 	      ((eof-object? current-element) (cdr output-list))
             (list-add! output-list current-element))))))
 
+(define (read-file:list port)
+  (let ((output-list (cons '() '())) ; Same thing as the above one, repeat code is no good though.
+        (check-eof (peek-char port)))
+    (if (eof-object? check-eof)
+        #f
+        (begin
+          (list-add! output-list check-eof)
+          (do ((current-element (read-line port 'concat) ; Not sure if i should use vectors instead,
+                                                         ; vectors would certainly be better.
+                                (read-line port 'concat)))
+              ((eof-object? current-element) (cdr output-list))
+            (list-add! output-list current-element))))))
+
 ;; Open & read file, then close it.
-(define (get-file name)
+(define (get-file name . list-toggle)
   (let ((the-port (open-file name "r")))
     (call-with-values
         (λ ()
-          (read-file the-port))
+          (if (null? list-toggle)
+              (read-file the-port)
+              (read-file:list the-port)))
       (λ vals
         (close-port the-port)
         (apply values vals)))))
