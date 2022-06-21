@@ -35,13 +35,11 @@
         (check-eof (peek-char port)))
     (if (eof-object? check-eof)
         #f
-        (begin
-          (list-add! output-list check-eof)
-          (do ((current-element (read-line port 'concat) ; Not sure if i should use vectors instead,
-                                                         ; vectors would certainly be better.
-                                (read-line port 'concat)))
-              ((eof-object? current-element) (cdr output-list))
-            (list-add! output-list current-element))))))
+        (do ((current-element (read-line port 'concat) ; Not sure if i should use vectors instead,
+                                        ; vectors would certainly be better.
+                              (read-line port 'concat)))
+            ((eof-object? current-element) (cdr output-list))
+          (list-add! output-list current-element)))))
 
 ;; Open & read file, then close it.
 (define (get-file name . list-toggle)
