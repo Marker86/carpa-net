@@ -2,6 +2,7 @@
 
 ;; Use goated module.
 (use-modules (ice-9 rdelim))
+(load "utils.scm")
 
 ;; Read file into a string, then return it, returns #f if EOF.
 (define (read-file port)
@@ -11,10 +12,6 @@
 	   (current-line (read-line port 'concat) (read-line port 'concat)))
 	  ((eof-object? current-line) (get-output-string output))
 	(display current-line output))))
-
-;; Add element to the end of list, abstraction intended to be used in read-directory.
-(define (list-add! l1 element)
-  (append! l1 (list element)))
 
 ;; Read directory into a list, then return it, returns #f if EOF.
 (define (read-directory dir-stream)
