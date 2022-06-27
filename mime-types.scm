@@ -47,10 +47,29 @@
 (define-syntax compose
   (λ (x)
     (syntax-case x ()
+      ((_ input f)
+       #'(f input))
       ((_ input f g)
        #'(f (g input)))
       ((_ input f g h ...)
        #'(f (pipe input g h ...))))))
+
+;; Same as above but returns a function, opposed of executing them.
+(define-syntax compose-lambda
+  (λ (x)
+    (syntax-case x ()
+      ((_ f)
+       (with-syntax ((in (datum->syntax x 'in)))
+         #'(lambda (in)
+             (f in))))
+      ((_ f g)
+       (with-syntax ((in (datum->syntax x 'in)))
+         #'(lambda (in)
+             (compose in f g))))
+      ((_ f g h ...)
+       (with-syntax ((in (datum->syntax x 'in)))
+         #'(lambda (in)
+             (compose in f g h ...)))))))
 
 ;; Match a single line & return the substring & the suffix, in the following
 ;; structure: (substring suffix), returning #f if there was no match.
@@ -81,8 +100,11 @@
             (regexp-exec compiled-regexp x))
           string-list))
 
-;; Parse the line
-(define (parse-line line))
+;; Parse the lines
+(define (parse-lines lines)
+  (compose line
+           (compose-lambda
+             (regexp-exec comment-regexp))))
 
 ;; Shove the matches list in MIME types table following this rule:
 ;; (type ext1 ext2 ...) -> (hash-set! hash-table ext1 type) ...
