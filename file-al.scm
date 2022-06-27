@@ -41,14 +41,14 @@
             ((eof-object? current-element) (cdr output-list))
           (list-add! output-list current-element)))))
 
-;; Open & read file, then close it.
-(define (get-file name . list-toggle)
+;; Open & read file, then close it, notice the keyword syntax.
+(define* (get-file name #:key (list-toggle #f))
   (let ((the-port (open-file name "r")))
     (call-with-values
         (λ ()
-          (if (null? list-toggle)
-              (read-file the-port)
-              (read-file:list the-port)))
+          (if list-toggle
+              (read-file:list the-port)
+              (read-file the-port)))
       (λ vals
         (close-port the-port)
         (apply values vals)))))
