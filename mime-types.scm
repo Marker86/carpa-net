@@ -11,6 +11,12 @@
 (define name-regexp (make-regexp "[A-Za-z/\\.]+"))
 (define white-regexp (make-regexp "^[[:blank:]]*$"))
 
+;; Utility we shall use.
+(define-syntax dolist
+  (syntax-rules ()
+    ((_ (var iter-list) exp ...)
+     (do (var)))))
+
 ;; Match a single line & return the substring & the suffix, in the following
 ;; structure: (substring suffix), returning #f if there was no match.
 (define (regexp-fetch compiled-regexp the-string)
@@ -27,7 +33,7 @@
     (let iteration ((initial-fetch (regexp-fetch compiled-regexp the-string)))
       (if initial-fetch
           (let ((the-substring (car initial-fetch))
-                (rest-string (caddr initial-fetch)))
+                (rest-string (cadr initial-fetch)))
             (list-add! the-output the-substring)
             (iteration (regexp-fetch compiled-regexp rest-string)))
           (cdr the-output)))))
