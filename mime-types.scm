@@ -11,11 +11,35 @@
 (define name-regexp (make-regexp "[A-Za-z/\\.]+"))
 (define white-regexp (make-regexp "^[[:blank:]]*$"))
 
-;; Utility we shall use.
+;; Utility we shall use, looping through list on terms of loop is too repetitive, going
+;; against my doctrine, some other functions are bound to be rewritten on terms of macros &
+;; abstractions, this one is inspired by the common lisp implementation of dolist.
 (define-syntax dolist
-  (syntax-rules ()
-    ((_ (var iter-list) exp ...)
-     (do (var)))))
+  (λ (x)
+    (syntax-case x ()
+      ((_ (var the-list) expr expr* ...) ; First syntax form.  
+       (with-syntax ((the-iterator
+                      (datum->syntax x 'the-iterator)))
+         #'(let the-iterator ((var (car the-list))
+                              (the-rest (cdr the-list)))
+             expr expr* ...
+             (unless (null? the-rest)
+               (the-iterator (car the-rest)
+                             (cdr the-rest))))))
+
+      ((_ (var the-list ret-var) expr expr* ...) ; Second syntax form.
+       (with-syntax ((the-iterator
+                      (datum->syntax x 'the-iterator))
+                     (the-result
+                      (datum->syntax x 'the-result)))
+         #'(let ((ret-var #f))
+             (let the-iterator ((var (car the-list))
+                                (the-rest (cdr the-list)))
+               expr expr* ...
+               (if (null? the-rest)
+                   ret-var
+                   (the-iterator (car the-rest)
+                                 (cdr the-rest))))))))))
 
 ;; Match a single line & return the substring & the suffix, in the following
 ;; structure: (substring suffix), returning #f if there was no match.
